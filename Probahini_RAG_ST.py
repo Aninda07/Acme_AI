@@ -1,7 +1,6 @@
 import os
 import logging
 import streamlit as st
-from dotenv import load_dotenv
 from langchain.vectorstores import Chroma
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 import google.generativeai as genai
@@ -17,17 +16,15 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Load environment variables
-load_dotenv()
-
-TELEGRAM_TOKEN = os.getenv("7420932890:AAG0Hd14-oGpCzEyDOVNv9o6WLMgFWa_Pj8")
-GOOGLE_API_KEY = os.getenv("AIzaSyDcjsieJ_tQ4imLT7IyFjoXB1V5Xl1-tpc")
+# Load environment variables from Render
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 PERSIST_DIR = './db/gemini/'  # Replace with your actual directory
 
 # Integrating monitoring feature through LangSmith
 os.environ["LANGCHAIN_TRACING_V2"] = "true"
-os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
-os.environ["LANGCHAIN_API_KEY"] = "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"
+os.environ["LANGCHAIN_ENDPOINT"] = os.getenv("LANGCHAIN_ENDPOINT")
+os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
 os.environ["LANGCHAIN_PROJECT"] = "Probahini Chat Bot"
 
 # Initialize chat history
@@ -42,7 +39,6 @@ model = ChatGoogleGenerativeAI(
     convert_system_message_to_human=True,
     timeout=None,
     max_retries=2
-    # other params...
 )
 
 # Configure Google Generative AI with the API key
