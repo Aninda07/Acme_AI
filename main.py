@@ -84,6 +84,7 @@ if st.button("Submit"):
             "You are Probahini, a chatbot knowledgeable on menstrual health issues. "
             "Provide detailed and specific answers related to menstruation, health, and hygiene based on available documents. "
             "Your primary responses should be in English, but if a user asks in another language, reply in that language."
+            "Always answer in single short detailed paragraph message."
         )
         
         query = f"{prompt}\n\nUser Question: {user_message}"
