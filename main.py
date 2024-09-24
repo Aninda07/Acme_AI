@@ -53,7 +53,7 @@ if not os.path.exists(PERSIST_DIR):
     
     try:
         pdf_documents = pdf_loader.load()
-        splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=0)
+        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
         pdf_context = "\n\n".join(str(p.page_content) for p in pdf_documents)
         pdfs = splitter.split_text(pdf_context)
         vectordb = Chroma.from_texts(pdfs, embeddings, persist_directory=PERSIST_DIR)
@@ -91,8 +91,29 @@ if st.button("Submit"):
         
         # Query document-based response
         response = query_chain({"query": query})
-        print(response)
         bot_response = response.get('result', None)
+        
+        # If no response from documents, fallback to general knowledge response
+        if not bot_response or "I'm sorry, I couldn't find an answer to your question." in bot_response:
+            fallback_prompt = (
+                "You are a knowledgeable chatbot with access to a wide range of information. "
+                "If a user asks something that is not covered in the provided documents, "
+                "answer the question as best as you can based on your general knowledge."
+            )
+            
+            fallback_query = [
+                ("system", fallback_prompt),
+                ("human", user_message)
+            ]
+            try:
+                fallback_response = model.invoke(fallback_query, safety_settings={
+                    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+                    HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+                })
+                bot_response = fallback_response.content
+            except Exception as e:
+                logger.error(f"Fallback model error: {e}")
+                bot_response = "I'm sorry, I couldn't retrieve an answer to your question."
 
         # If still no valid response, provide a generic fallback message
         if not bot_response:
