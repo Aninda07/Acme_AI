@@ -53,7 +53,7 @@ if not os.path.exists(PERSIST_DIR):
     
     try:
         pdf_documents = pdf_loader.load()
-        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+        splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=0)
         pdf_context = "\n\n".join(str(p.page_content) for p in pdf_documents)
         pdfs = splitter.split_text(pdf_context)
         vectordb = Chroma.from_texts(pdfs, embeddings, persist_directory=PERSIST_DIR)
@@ -91,6 +91,7 @@ if st.button("Submit"):
         
         # Query document-based response
         response = query_chain({"query": query})
+        print(response)
         bot_response = response.get('result', None)
 
         # If still no valid response, provide a generic fallback message
