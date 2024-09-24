@@ -92,28 +92,6 @@ if st.button("Submit"):
         # Query document-based response
         response = query_chain({"query": query})
         bot_response = response.get('result', None)
-        
-        # If no response from documents, fallback to general knowledge response
-        if not bot_response or "I'm sorry, I couldn't find an answer to your question." in bot_response:
-            fallback_prompt = (
-                "You are a knowledgeable chatbot with access to a wide range of information. "
-                "If a user asks something that is not covered in the provided documents, "
-                "answer the question as best as you can based on your general knowledge."
-            )
-            
-            fallback_query = [
-                ("system", fallback_prompt),
-                ("human", user_message)
-            ]
-            try:
-                fallback_response = model.invoke(fallback_query, safety_settings={
-                    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
-                    HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
-                })
-                bot_response = fallback_response.content
-            except Exception as e:
-                logger.error(f"Fallback model error: {e}")
-                bot_response = "I'm sorry, I couldn't retrieve an answer to your question."
 
         # If still no valid response, provide a generic fallback message
         if not bot_response:
