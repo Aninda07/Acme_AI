@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 # Load environment variables from Render
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+google_api_key = os.getenv("GOOGLE_API_KEY")
 PERSIST_DIR = './db/gemini/'  # Replace with your actual directory
 
 # Integrating monitoring feature through LangSmith
